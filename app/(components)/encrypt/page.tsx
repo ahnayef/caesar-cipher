@@ -55,8 +55,6 @@ export default function Page() {
 
         setFormState({ ...formState, encryptedText: encryptedText, textLink: `${location.host}/auth/${password}!${encryptedText}!${id}` });
 
-        console.log(formState.textLink);
-
     }
 
 
