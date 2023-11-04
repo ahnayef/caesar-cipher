@@ -3,7 +3,7 @@ import style from "./auth.module.css"
 
 export default function Page() {
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e:any) => {
         e.preventDefault();
 
     }
