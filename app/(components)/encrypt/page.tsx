@@ -4,6 +4,7 @@ import { useReducer } from "react";
 import style from "./encrypt.module.css"
 import crypto from "crypto";
 import { nanoid } from "nanoid";
+import Link from "next/link";
 
 interface FormState {
     text: string;
@@ -44,6 +45,7 @@ function hashString(p: string) {
 }
 
 export default function Page() {
+
     const [formState, dispatch] = useReducer(reducer, initialState);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,7 +60,7 @@ export default function Page() {
         const id = nanoid();
         dispatch({ field: 'encryptedText', value: encryptedText });
         dispatch({ field: 'password', value: password });
-        dispatch({ field: 'textLink', value: `${location.host}/auth/${password}!${encryptedText}!${id}` });
+        dispatch({ field: 'textLink', value: `http://${location.host}/auth/${password}!${encryptedText}!${id}` });
     }
 
 
@@ -69,7 +71,7 @@ export default function Page() {
                 <input type="number" name="key" placeholder="Enter key" onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
                 <button type="submit">Encrypt</button>
-                <button type="button">Share</button>
+                <Link href={formState.textLink} type="button">Share</Link>
             </form>
         </div>
     )
