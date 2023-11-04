@@ -1,12 +1,19 @@
 "use client"
 
-import { useState } from "react";
+import { useReducer } from "react";
 import style from "./encrypt.module.css"
 import crypto from "crypto";
 import { nanoid } from "nanoid";
 
+interface FormState {
+    text: string;
+    key: number;
+    password: string;
+    encryptedText: string;
+    textLink: string;
+}
 
-const initialState: { text: string, key: number, password: string, encryptedText: string, textLink: string } = {
+const initialState: FormState = {
     text: "",
     key: 0,
     password: "",
@@ -14,47 +21,44 @@ const initialState: { text: string, key: number, password: string, encryptedText
     textLink: "",
 }
 
+function reducer(state: FormState, action: { field: string, value: string | number }) {
+    return { ...state, [action.field]: action.value };
+}
+
+function encryptText(text: string, key: number) {
+    return text.split("").map((char: string) => {
+        if (char >= 'A' && char <= 'Z') {
+            return String.fromCharCode(((char.charCodeAt(0) - 65 + key) % 26) + 65);
+        } else if (char >= 'a' && char <= 'z') {
+            return String.fromCharCode(((char.charCodeAt(0) - 97 + key) % 26) + 97);
+        } else {
+            return char;
+        }
+    }).join("");
+}
+
+function hashString(p: string) {
+    const hash = crypto.createHash('sha256');
+    hash.update(p);
+    return hash.digest('hex');
+}
 
 export default function Page() {
+    const [formState, dispatch] = useReducer(reducer, initialState);
 
-    const [formState, setFormState] = useState(initialState);
-
-
-    const handleChange = (e: any) => {
-        setFormState({ ...formState, [e.target.name]: e.target.value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        dispatch({ field: e.target.name, value: e.target.value });
     }
 
-    const encrypt = (e: any) => {
+    const encrypt = (e: React.FormEvent) => {
         e.preventDefault();
 
-        let text = formState.text;
-        let key = Number(formState.key);
-        let password = formState.password;
-        let encryptedText = "";
-        let id = nanoid();
-        text.split("").forEach((char: string) => {
-            if (char >= 'A' && char <= 'Z') {
-                let ch = String.fromCharCode(((char.charCodeAt(0) - 65 + key) % 26) + 65);
-                encryptedText += ch;
-            } else if (char >= 'a' && char <= 'z') {
-                let ch = String.fromCharCode(((char.charCodeAt(0) - 97 + key) % 26) + 97);
-                encryptedText += ch;
-            } else {
-                encryptedText += char;
-            }
-        });
-
-        const stringToHash = (p: string) => {
-            const hash = crypto.createHash('sha256');
-            hash.update(p);
-            return hash.digest('hex');
-        }
-
-        
-        password = stringToHash(password);
-
-        setFormState({ ...formState, encryptedText: encryptedText, textLink: `${location.host}/auth/${password}!${encryptedText}!${id}` });
-
+        const encryptedText = encryptText(formState.text, Number(formState.key));
+        const password = hashString(formState.password);
+        const id = nanoid();
+        dispatch({ field: 'encryptedText', value: encryptedText });
+        dispatch({ field: 'password', value: password });
+        dispatch({ field: 'textLink', value: `${location.host}/auth/${password}!${encryptedText}!${id}` });
     }
 
 
