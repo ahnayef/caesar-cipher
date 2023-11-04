@@ -3,26 +3,28 @@
 import { useEffect, useState } from "react"
 import style from "./decrypt.module.css"
 
-const initialState: { encodedText: string, decodedText: string, key:number } = {
+const initialState: { encodedText: string, decodedText: string, key: number } = {
   encodedText: "",
   decodedText: "",
   key: 0
 }
 
 
-function decodeText(text: string, key:number) {
+function decodeText(text: string, key: number) {
+  key = key % 26; // Ensure the key is between 0 and 25
+
   return text.split("").map((char: string) => {
     if (char >= 'A' && char <= 'Z') {
-      return String.fromCharCode(((char.charCodeAt(0) - 65 - key) % 26) + 65);
+      return String.fromCharCode(((char.charCodeAt(0) - 65 - key + 26) % 26) + 65);
     } else if (char >= 'a' && char <= 'z') {
-      return String.fromCharCode(((char.charCodeAt(0) - 97 - key) % 26) + 97);
+      return String.fromCharCode(((char.charCodeAt(0) - 97 - key + 26) % 26) + 97);
     } else {
       return char;
     }
   }).join("");
 }
 
-export default function Page({  searchParams, }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
+export default function Page({ searchParams, }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
 
   const [formState, setFormState] = useState(initialState);
 
@@ -42,7 +44,7 @@ export default function Page({  searchParams, }: { searchParams?: { [key: string
   const decode = (e: React.FormEvent) => {
     e.preventDefault();
     const encodedText = formState.encodedText;
-    setFormState({ ...formState, decodedText: decodeText(encodedText,formState.key) });
+    setFormState({ ...formState, decodedText: decodeText(encodedText, formState.key) });
   }
 
   return (

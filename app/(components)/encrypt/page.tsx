@@ -55,6 +55,9 @@ export default function Page() {
     const encrypt = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if(formState.text.includes("!")){
+            formState.text = formState.text.replaceAll("!", ",");
+        }
         const encryptedText = encryptText(formState.text, Number(formState.key));
         const password = hashString(formState.password);
         const id = nanoid();
@@ -68,10 +71,11 @@ export default function Page() {
         <div className={style.EncryptMain}>
             <form onSubmit={encrypt}>
                 <textarea placeholder="Enter text" name="text" onChange={handleChange} maxLength={1500} required />
-                <input type="number" name="key" placeholder="Enter key" onChange={handleChange} required />
+                <input type="number" name="key" placeholder="Enter key"  min={1} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
                 <button type="submit">Encrypt</button>
                 <Link href={formState.textLink} type="button">Share</Link>
+                <p>{formState.encryptedText}</p>
             </form>
         </div>
     )
