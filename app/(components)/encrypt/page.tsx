@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import style from "./encrypt.module.css"
+import crypto from "crypto";
+import { nanoid } from "nanoid";
 
 
-const initialState: { text: string, key: number, password: string, encryptedText: string } = {
+const initialState: { text: string, key: number, password: string, encryptedText: string, textLink: string } = {
     text: "",
     key: 0,
     password: "",
-    encryptedText: ""
+    encryptedText: "",
+    textLink: "",
 }
 
 
@@ -28,10 +31,7 @@ export default function Page() {
         let key = Number(formState.key);
         let password = formState.password;
         let encryptedText = "";
-        let decryptedText = "";
-
-        console.log(key)
-
+        let id = nanoid();
         text.split("").forEach((char: string) => {
             if (char >= 'A' && char <= 'Z') {
                 let ch = String.fromCharCode(((char.charCodeAt(0) - 65 + key) % 26) + 65);
@@ -44,14 +44,18 @@ export default function Page() {
             }
         });
 
-        console.log(encryptedText);
-
+        const stringToHash = (p: string) => {
+            const hash = crypto.createHash('sha256');
+            hash.update(p);
+            return hash.digest('hex');
+        }
 
         
+        password = stringToHash(password);
 
-        setFormState({ ...formState, encryptedText: encryptedText });
+        setFormState({ ...formState, encryptedText: encryptedText, textLink: `${location.host}/auth/${password}!${encryptedText}!${id}` });
 
-
+        console.log(formState.textLink);
 
     }
 
@@ -59,9 +63,9 @@ export default function Page() {
     return (
         <div className={style.EncryptMain}>
             <form onSubmit={encrypt}>
-                <textarea placeholder="Enter text" name="text" onChange={handleChange} required />
+                <textarea placeholder="Enter text" name="text" onChange={handleChange} maxLength={1500} required />
                 <input type="number" name="key" placeholder="Enter key" onChange={handleChange} required />
-                <input type="password" name="password" placeholder="Enter password" onChange={handleChange} />
+                <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
                 <button type="submit">Encrypt</button>
                 <button type="button">Share</button>
             </form>
