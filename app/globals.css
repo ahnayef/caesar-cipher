@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap');
 /* font-family: 'Signika Negative', sans-serif; */
 
-
+/* 
 :root {
     --background: #020404;
     --primary: #00FFFF; 
@@ -23,7 +23,6 @@
 
 body {
     background-color: var(--background);
-    background-color: rgba(255, 255, 255, 0.1);
     background-image: url("./assets/background.jpg");
     background-position: center;
     background-size: cover;
@@ -57,4 +56,4 @@ body {
 
 a{
     text-decoration: none;
-}
+} */
