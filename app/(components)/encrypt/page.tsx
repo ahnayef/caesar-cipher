@@ -4,7 +4,9 @@ import { useReducer } from "react";
 import style from "./encrypt.module.css"
 import crypto from "crypto";
 import { nanoid } from "nanoid";
-import Link from "next/link";
+import { BsShieldLock } from "react-icons/bs"
+import { HiMiniLink } from "react-icons/hi2"
+import {MdOutlineContentCopy} from "react-icons/md"
 
 interface FormState {
     text: string;
@@ -55,7 +57,7 @@ export default function Page() {
     const encrypt = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if(formState.text.includes("!")){
+        if (formState.text.includes("!")) {
             formState.text = formState.text.replaceAll("!", ",");
         }
         const encryptedText = encryptText(formState.text, Number(formState.key));
@@ -68,15 +70,27 @@ export default function Page() {
 
 
     return (
-        <div className={style.EncryptMain}>
-            <form onSubmit={encrypt}>
-                <textarea placeholder="Enter text" name="text" onChange={handleChange} maxLength={1500} required />
-                <input type="number" name="key" placeholder="Enter key"  min={1} onChange={handleChange} required />
-                <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
-                <button type="submit">Encrypt</button>
-                <Link href={formState.textLink} type="button">Share</Link>
-                <p>{formState.encryptedText}</p>
-            </form>
-        </div>
+        <>
+            <div className="over">
+            </div>
+            <div className={style.encryptMain}>
+                <form onSubmit={encrypt}>
+                    <h2>Encrypt</h2>
+                    <textarea placeholder="Enter text" name="text" onChange={handleChange} maxLength={1500} required />
+                    <input type="number" name="key" placeholder="Enter key" min={1} onChange={handleChange} required />
+                    <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
+                    <button type="submit"> <i><BsShieldLock /> </i> Encrypt</button>
+                    <button type="button"><i><HiMiniLink /></i> Get link</button>
+                </form>
+                {
+                    formState.encryptedText.length > 0 &&
+                    <div className={style.resultArea}>
+                        {/* <h2>Encrypted text</h2> */}
+                        <p>{formState.encryptedText}</p>
+                        <button> <i><MdOutlineContentCopy/></i> Copy</button>
+                    </div>
+                }
+            </div>
+        </>
     )
 }
