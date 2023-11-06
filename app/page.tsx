@@ -1,11 +1,14 @@
 import Link from 'next/link'
-import styles from './page.module.css'
+import { BsShieldLock } from 'react-icons/bs'
+import { AiOutlineUnlock } from 'react-icons/ai'
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <Link href="/encrypt">Encrypt</Link>
-      <Link href="/decrypt">Decrypt</Link>
+    <>
+    <main className="container">
+      <Link href="/encrypt" className='btn'> <i><BsShieldLock /> </i>  Encrypt</Link>
+      <Link href="/decrypt" className='btn'> <i><AiOutlineUnlock /></i>Decrypt</Link>
     </main>
+    </>
   )
 }

@@ -1,31 +1,33 @@
 "use client"
 
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import style from "./encrypt.module.css"
 import crypto from "crypto";
 import { nanoid } from "nanoid";
 import { BsShieldLock } from "react-icons/bs"
 import { HiMiniLink } from "react-icons/hi2"
-import { MdOutlineContentCopy } from "react-icons/md"
+import { MdOutlineContentCopy } from "react-icons/md";
+import {BiShareAlt} from "react-icons/bi"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios"
+import Link from "next/link";
 
 
 interface FormState {
     text: string;
     key: number;
-    password: string;
     encryptedText: string;
     textLink: string;
+    rawPassword: string;
 }
 
 const initialState: FormState = {
     text: "",
     key: 0,
-    password: "",
     encryptedText: "",
     textLink: "",
+    rawPassword: ""
 }
 
 function reducer(state: FormState, action: { field: string, value: string | number }) {
@@ -53,6 +55,7 @@ function hashString(p: string) {
 export default function Page() {
 
     const [formState, dispatch] = useReducer(reducer, initialState);
+    const [shortenedLink, setShortenedLink] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -65,7 +68,8 @@ export default function Page() {
             formState.text = formState.text.replaceAll("!", ",");
         }
         const encryptedText = encryptText(formState.text, Number(formState.key));
-        const password = hashString(formState.password);
+
+        const password = hashString(formState.rawPassword);
         const id = nanoid();
         dispatch({ field: 'encryptedText', value: encryptedText });
         dispatch({ field: 'password', value: password });
@@ -78,17 +82,17 @@ export default function Page() {
         if (formState.textLink) {
 
             const msg = toast.loading("Generating link");
-            // toast.update(msg, { render: "Link generated", type: "success", isLoading: false, autoClose: 500 });
 
             const url= encodeURI(formState.textLink);
 
             axios.get(`https://api.lnk.pw/1.0/public/lnk.pw/link?long=${url}`).then((res)=>{
                 const data = res.data;
                 navigator.clipboard.writeText(data.link);
-                toast.update(msg, { render: "Link copied to clicpboard", type: "success", isLoading: false, autoClose: 500 });
+                setShortenedLink(data.link);
+                toast.update(msg, { render: "Link copied to clicpboard", type: "success", isLoading: false, autoClose: 1500 });
 
             }).catch((err) => {
-                toast.update(msg, { render: "Something went wrong", type: "error", isLoading: false, autoClose: 500 });
+                toast.update(msg, { render: "Something went wrong", type: "error", isLoading: false, autoClose: 1500 });
             });
 
 
@@ -100,31 +104,55 @@ export default function Page() {
 
     }
 
+    const handleCopy=()=>{
+        navigator.clipboard.writeText(formState.encryptedText).then(()=>{
+            toast.success("Copied to clipboard");
+        }).catch(()=> console.log("Something went wrong"));
+    }
+
+
+    const handleShare = ()=>{
+        navigator.share({
+            title: `Decrypt this message. Key: ${formState.key} Password : ${formState.rawPassword}`,
+            url: shortenedLink
+        }).then(()=>{
+            toast.success("Shared");
+        }).catch(()=> console.log("Something went wrong"));
+    }
 
     return (
         <>
             <ToastContainer theme="dark" />
             <div className="over">
             </div>
-            <div className={style.encryptMain}>
+            <div className="container">
                 <form onSubmit={encrypt}>
                     <h2>Encrypt</h2>
                     <textarea placeholder="Enter text" name="text" onChange={handleChange} maxLength={1500} required />
                     <input type="number" name="key" placeholder="Enter key" min={1} onChange={handleChange} required />
-                    <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
+                    <input type="password" name="rawPassword" placeholder="Enter password" onChange={handleChange} required />
                     <button type="submit"> <i><BsShieldLock /> </i> Encrypt</button>
-                    {formState.encryptedText.length > 0 &&
+                    {formState.encryptedText.length > 0 && !shortenedLink &&
                         <button onClick={generateLink}><i><HiMiniLink /></i> Get link</button>
                     }
                 </form>
                 {
                     formState.encryptedText.length > 0 &&
-                    <div className={style.resultArea}>
+                    <div className="resultArea">
                         {/* <h2>Encrypted text</h2> */}
-                        <p>{formState.encryptedText}</p>
-                        <button> <i><MdOutlineContentCopy /></i> Copy</button>
+                        <p>Text: {formState.encryptedText}</p>
+                        <p>Key: {formState.key}</p>
+                        <p>Password: {formState.rawPassword}</p>
+                        {shortenedLink.length > 0 && <p>Link: {shortenedLink}</p>}
+
+                        <button onClick={handleCopy}> <i><MdOutlineContentCopy /></i> Copy Text</button>
+
+                        {shortenedLink.length > 0 && <button onClick={handleShare}> <i><BiShareAlt /></i> Share as Link</button>}
                     </div>
                 }
+
+                <Link href="/" className="btn">Home</Link>
+                
             </div>
         </>
     )

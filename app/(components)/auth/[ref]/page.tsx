@@ -4,8 +4,9 @@ import style from "./auth.module.css"
 import crypto from "crypto";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
 
-const initialState:{userPassword:string, encryptedText:string} = {
+const initialState: { userPassword: string, encryptedText: string } = {
     userPassword: "",
     encryptedText: "",
 }
@@ -17,9 +18,9 @@ function hashString(p: string) {
     return hash.digest('hex');
 }
 
-export default function Page({params}: {params: {ref: string}}) {
+export default function Page({ params }: { params: { ref: string } }) {
 
-    const {ref} = params;
+    const { ref } = params;
 
     const password = ref.split("!")[0];
     const encryptedText = ref.split("!")[1];
@@ -28,7 +29,7 @@ export default function Page({params}: {params: {ref: string}}) {
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormState({...formState, [e.target.name]: e.target.value});
+        setFormState({ ...formState, [e.target.name]: e.target.value });
     }
 
     console.log(password)
@@ -36,7 +37,7 @@ export default function Page({params}: {params: {ref: string}}) {
 
 
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
 
         let userPass = formState.userPassword;
@@ -45,11 +46,11 @@ export default function Page({params}: {params: {ref: string}}) {
         console.log(userPass, password);
 
         if (userPass === password) {
-            setFormState({...formState, encryptedText: encryptedText});
+            setFormState({ ...formState, encryptedText: encryptedText });
             toast.success("Correct password");
             toast.info("Redirecting to decrypted text");
             location.href = `http://${location.host}/decrypt?text=${encryptedText}`;
-        }else{
+        } else {
             toast.error("Wrong password");
         }
 
@@ -58,16 +59,16 @@ export default function Page({params}: {params: {ref: string}}) {
 
     return (
         <>
-        <ToastContainer theme="dark"/>
-
-        <div className={style.authMain}>
-
-            <form onSubmit={handleSubmit}>
-                <input type="password" name="userPassword" onChange={handleChange}/>
-                <button type="submit">Submit</button>
-            </form>
-
-        </div>
+            <ToastContainer theme="dark" />
+            <div className="over">
+            </div>
+            <div className="container">
+                <form onSubmit={handleSubmit}>
+                    <input type="password" placeholder="Password" name="userPassword" onChange={handleChange} required/>
+                    <button type="submit">Submit</button>
+                </form>
+                <Link href="/" className="btn">Home</Link>
+            </div>
         </>
     )
 }

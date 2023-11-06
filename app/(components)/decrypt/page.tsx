@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link";
 import { useEffect, useState } from "react"
-import style from "./decrypt.module.css"
+import { AiOutlineUnlock } from "react-icons/ai";
 
 const initialState: { encodedText: string, decodedText: string, key: number } = {
   encodedText: "",
@@ -48,14 +49,23 @@ export default function Page({ searchParams, }: { searchParams?: { [key: string]
   }
 
   return (
-    <div className={style.decryptMain}>
-      <form onSubmit={decode}>
-        <input type="text" name="encodedText" onChange={handleChange} value={formState.encodedText} />
-        <input type="number" placeholder="Enter key" name="key" onChange={handleChange} required />
-        <button type="submit">Decrypt</button>
-        <p>{formState.decodedText}</p>
-
-      </form>
-    </div>
+    <>
+      <div className="over">
+      </div>
+      <div className="container">
+        <form onSubmit={decode}>
+          <input type="text" name="encodedText" onChange={handleChange} value={formState.encodedText} />
+          <input type="number" placeholder="Enter key" name="key" onChange={handleChange} required />
+          <button type="submit"><i><AiOutlineUnlock/></i> Decrypt</button>
+        </form>
+        {
+          formState.decodedText &&
+          <div className="resultArea">
+            <p>{formState.decodedText}</p>
+          </div>
+        }
+        <Link href="/" className="btn">Home</Link>
+      </div>
+    </>
   )
 }
