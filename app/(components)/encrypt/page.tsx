@@ -6,7 +6,11 @@ import crypto from "crypto";
 import { nanoid } from "nanoid";
 import { BsShieldLock } from "react-icons/bs"
 import { HiMiniLink } from "react-icons/hi2"
-import {MdOutlineContentCopy} from "react-icons/md"
+import { MdOutlineContentCopy } from "react-icons/md"
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios"
+
 
 interface FormState {
     text: string;
@@ -69,8 +73,37 @@ export default function Page() {
     }
 
 
+    const generateLink = () => {
+
+        if (formState.textLink) {
+
+            const msg = toast.loading("Generating link");
+            // toast.update(msg, { render: "Link generated", type: "success", isLoading: false, autoClose: 500 });
+
+            const url= encodeURI(formState.textLink);
+
+            axios.get(`https://api.lnk.pw/1.0/public/lnk.pw/link?long=${url}`).then((res)=>{
+                const data = res.data;
+                navigator.clipboard.writeText(data.link);
+                toast.update(msg, { render: "Link copied to clicpboard", type: "success", isLoading: false, autoClose: 500 });
+
+            }).catch((err) => {
+                toast.update(msg, { render: "Something went wrong", type: "error", isLoading: false, autoClose: 500 });
+            });
+
+
+
+
+        } else {
+            toast.error("Something went wrong");
+        }
+
+    }
+
+
     return (
         <>
+            <ToastContainer theme="dark" />
             <div className="over">
             </div>
             <div className={style.encryptMain}>
@@ -80,14 +113,16 @@ export default function Page() {
                     <input type="number" name="key" placeholder="Enter key" min={1} onChange={handleChange} required />
                     <input type="password" name="password" placeholder="Enter password" onChange={handleChange} required />
                     <button type="submit"> <i><BsShieldLock /> </i> Encrypt</button>
-                    <button type="button"><i><HiMiniLink /></i> Get link</button>
+                    {formState.encryptedText.length > 0 &&
+                        <button onClick={generateLink}><i><HiMiniLink /></i> Get link</button>
+                    }
                 </form>
                 {
                     formState.encryptedText.length > 0 &&
                     <div className={style.resultArea}>
                         {/* <h2>Encrypted text</h2> */}
                         <p>{formState.encryptedText}</p>
-                        <button> <i><MdOutlineContentCopy/></i> Copy</button>
+                        <button> <i><MdOutlineContentCopy /></i> Copy</button>
                     </div>
                 }
             </div>
