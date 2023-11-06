@@ -136,7 +136,6 @@ export default function Page() {
                 {
                     formState.encryptedText.length > 0 &&
                     <div className="resultArea">
-                        {/* <h2>Encrypted text</h2> */}
                         <p>Text: {formState.encryptedText}</p>
                         <p>Key: {formState.key}</p>
                         <p>Password: {formState.rawPassword}</p>
