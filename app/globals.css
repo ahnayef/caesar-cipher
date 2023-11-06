@@ -51,6 +51,8 @@ body {
     font-weight: bold;
     border-radius: 0.2em;
     opacity: 0.8;
+    animation: zoomIn 0.5s;
+    animation-timing-function: cubic-bezier(0.375, 0.885, 0.32, 1.275);
 }
 
 
@@ -94,6 +96,8 @@ a{
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.06);
     border-radius: 0.7em;
     z-index: 3;
+    animation: zoomIn 0.5s;
+    animation-timing-function: cubic-bezier(0.375, 0.885, 0.32, 1.275);
 }
 
 .container form input,
@@ -166,6 +170,8 @@ a{
     justify-content: center;
     text-align: left;
     flex-direction: column;
+    animation: zoomIn 0.5s;
+    animation-timing-function: cubic-bezier(0.375, 0.885, 0.32, 1.275);
 }
 .container .resultArea p{
     padding: 0.5em;
@@ -174,3 +180,17 @@ a{
 .container a{
     z-index: 3;
 }
+
+
+
+
+@keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3);
+    }
+  
+    50% {
+      opacity: 1;
+    }
+  }

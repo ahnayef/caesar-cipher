@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 import { BsShieldLock } from "react-icons/bs"
 import { HiMiniLink } from "react-icons/hi2"
 import { MdOutlineContentCopy } from "react-icons/md";
-import {BiShareAlt} from "react-icons/bi"
+import { BiShareAlt } from "react-icons/bi"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios"
@@ -83,9 +83,9 @@ export default function Page() {
 
             const msg = toast.loading("Generating link");
 
-            const url= encodeURI(formState.textLink);
+            const url = encodeURI(formState.textLink);
 
-            axios.get(`https://api.lnk.pw/1.0/public/lnk.pw/link?long=${url}`).then((res)=>{
+            axios.get(`https://api.lnk.pw/1.0/public/lnk.pw/link?long=${url}`).then((res) => {
                 const data = res.data;
                 navigator.clipboard.writeText(data.link);
                 setShortenedLink(data.link);
@@ -104,20 +104,20 @@ export default function Page() {
 
     }
 
-    const handleCopy=()=>{
-        navigator.clipboard.writeText(formState.encryptedText).then(()=>{
+    const handleCopy = () => {
+        navigator.clipboard.writeText(formState.encryptedText).then(() => {
             toast.success("Copied to clipboard");
-        }).catch(()=> console.log("Something went wrong"));
+        }).catch(() => console.log("Something went wrong"));
     }
 
 
-    const handleShare = ()=>{
+    const handleShare = () => {
         navigator.share({
             title: `Decrypt this message. Key: ${formState.key} Password : ${formState.rawPassword}`,
             url: shortenedLink
-        }).then(()=>{
+        }).then(() => {
             toast.success("Shared");
-        }).catch(()=> console.log("Something went wrong"));
+        }).catch(() => console.log("Something went wrong"));
     }
 
     return (
@@ -132,9 +132,6 @@ export default function Page() {
                     <input type="number" name="key" placeholder="Enter key" min={1} onChange={handleChange} required />
                     <input type="password" name="rawPassword" placeholder="Enter password" onChange={handleChange} required />
                     <button type="submit"> <i><BsShieldLock /> </i> Encrypt</button>
-                    {formState.encryptedText.length > 0 && !shortenedLink &&
-                        <button onClick={generateLink}><i><HiMiniLink /></i> Get link</button>
-                    }
                 </form>
                 {
                     formState.encryptedText.length > 0 &&
@@ -146,13 +143,15 @@ export default function Page() {
                         {shortenedLink.length > 0 && <p>Link: {shortenedLink}</p>}
 
                         <button onClick={handleCopy}> <i><MdOutlineContentCopy /></i> Copy Text</button>
-
+                        {formState.encryptedText.length > 0 && !shortenedLink &&
+                            <button onClick={generateLink}><i><HiMiniLink /></i> Get link</button>
+                        }
                         {shortenedLink.length > 0 && <button onClick={handleShare}> <i><BiShareAlt /></i> Share as Link</button>}
                     </div>
                 }
 
                 <Link href="/" className="btn">Home</Link>
-                
+
             </div>
         </>
     )
